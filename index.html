@@ -2,96 +2,305 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Para Ti ❤️</title>
+<title>Para mi persona favorita 💙</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: Arial, sans-serif;
-        text-align: center;
-    }
+body{
+    margin:0;
+    padding:0;
+    height:100vh;
+    overflow:hidden;
+    background: linear-gradient(135deg,#0a0f1f,#101a33);
+    font-family:'Poppins',sans-serif;
+    text-align:center;
+    color:#f5f5f5;
+}
 
-    h1 {
-        color: white;
-        font-size: 40px;
-        animation: latido 1s infinite;
-    }
+/* Canvas fondo */
+#backgroundCanvas{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+}
 
-    button {
-        padding: 15px 30px;
-        font-size: 18px;
-        border: none;
-        border-radius: 30px;
-        background: white;
-        color: #ff4b5c;
-        cursor: pointer;
-        transition: 0.3s;
-    }
+/* Canvas nombre */
+#nameCanvas{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:9999;
+}
 
-    button:hover {
-        transform: scale(1.1);
-    }
+/* Pantallas */
+.screen{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    transition:opacity 1s ease;
+    z-index:2;
+}
+.hidden{
+    opacity:0;
+    pointer-events:none;
+}
 
-    @keyframes latido {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
+h1{
+    font-family:'Great Vibes',cursive;
+    font-size:48px;
+    color:#7ec8ff;
+}
 
-    .heart {
-        position: absolute;
-        color: red;
-        font-size: 20px;
-        animation: float 5s linear infinite;
-    }
+button{
+    padding:12px 30px;
+    font-size:16px;
+    border-radius:30px;
+    margin:12px;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    border:1px solid #7ec8ff;
+    background:transparent;
+    color:#7ec8ff;
+}
+button:hover{
+    background:#7ec8ff;
+    color:#0a0f1f;
+}
 
-    @keyframes float {
-        0% {
-            transform: translateY(100vh);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(-10vh);
-            opacity: 0;
-        }
-    }
+.card{
+    background:#0f162b;
+    width:380px;
+    padding:40px;
+    border-radius:18px;
+    border:1px solid #4da6ff;
+    box-shadow:0 0 40px rgba(77,166,255,0.2);
+}
+.loveText{
+    font-family:'Pacifico',cursive;
+    font-size:28px;
+    color:#7ec8ff;
+    margin-bottom:20px;
+}
+.frase{
+    margin-top:20px;
+    font-size:15px;
+    line-height:1.7;
+    color:#e0f0ff;
+}
+.card img{
+    width:240px;
+    margin-top:20px;
+    border-radius:12px;
+}
 </style>
 </head>
 
 <body>
 
-<div>
-    <h1>¿Quieres ser mi persona favorita para siempre? ❤️</h1>
-    <br>
-    <button onclick="mostrarMensaje()">Haz clic aquí</button>
+<audio id="music" loop>
+    <source src="ourSong.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="backgroundCanvas"></canvas>
+<canvas id="nameCanvas"></canvas>
+
+<div class="screen" id="questionScreen">
+    <h1>¿Quieres ser mi Chamoyada de Pepino de San Valentin? 💙</h1>
+    <div>
+        <button id="yes">Sisisi 💖</button>
+        <button id="no">No 😠</button>
+    </div>
+</div>
+
+<div class="screen hidden" id="loveScreen">
+    <div class="card">
+        <div class="loveText">Te amo muchoo Yukari, lo que dure la eternidad 💙✨</div>
+        <img src="kirblove.gif">
+        <div class="frase">
+            Eres lo más bonito que tengo en la vida, sueño hecho mujer. 
+            Nadie rivaliza con tu esencia, estás tan presente en mis pensamientos 
+            tal como las nubes del cielo.
+            <br><br>
+            Somos fruto de nuestro amor nacido de un hermoso árbol de pera, 
+            trascendiéndonos al hermoso cielo azul que nos espera.
+        </div>
+    </div>
 </div>
 
 <script>
-function mostrarMensaje() {
-    alert("Te amo muchísimo ❤️ Gracias por existir");
+
+/* ===== CANVAS CONFIG ===== */
+const bgCanvas = document.getElementById("backgroundCanvas");
+const bgCtx = bgCanvas.getContext("2d");
+
+const nameCanvas = document.getElementById("nameCanvas");
+const nameCtx = nameCanvas.getContext("2d");
+
+function resize(){
+    bgCanvas.width = nameCanvas.width = window.innerWidth;
+    bgCanvas.height = nameCanvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
+
+/* ===== FONDO ESTRELLAS ===== */
+let stars=[];
+for(let i=0;i<120;i++){
+    stars.push({
+        x:Math.random()*bgCanvas.width,
+        y:Math.random()*bgCanvas.height,
+        size:Math.random()*1.5+0.5,
+        alpha:Math.random(),
+        speed:Math.random()*0.02+0.01
+    });
 }
 
-function crearCorazon() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "❤️";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (Math.random() * 20 + 10) + "px";
-    document.body.appendChild(heart);
+let hearts=[];
 
-    setTimeout(() => {
-        heart.remove();
-    }, 5000);
+function animarFondo(){
+    bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+
+    stars.forEach(s=>{
+        s.alpha+=s.speed;
+        if(s.alpha>=1||s.alpha<=0) s.speed*=-1;
+
+        bgCtx.beginPath();
+        bgCtx.arc(s.x,s.y,s.size,0,Math.PI*2);
+        bgCtx.fillStyle=`rgba(120,190,255,${s.alpha})`;
+        bgCtx.fill();
+    });
+
+    hearts.forEach(h=>{
+        h.y -= 1;
+        bgCtx.font = h.size+"px Arial";
+        bgCtx.fillStyle = "rgba(255,120,150,0.8)";
+        bgCtx.fillText("❤", h.x, h.y);
+    });
+
+    requestAnimationFrame(animarFondo);
+}
+animarFondo();
+
+/* ===== BOTÓN NO ===== */
+const noBtn=document.getElementById("no");
+function mover(){
+    noBtn.style.position="absolute";
+    noBtn.style.left=Math.random()*(window.innerWidth-120)+"px";
+    noBtn.style.top=Math.random()*(window.innerHeight-60)+"px";
+}
+noBtn.addEventListener("mouseover", mover);
+noBtn.addEventListener("touchstart", e=>{
+    e.preventDefault();
+    mover();
+});
+
+/* ===== BOTÓN SÍ ===== */
+const music=document.getElementById("music");
+document.getElementById("yes").addEventListener("click",()=>{
+
+    music.play();
+
+    document.getElementById("questionScreen").classList.add("hidden");
+    document.getElementById("loveScreen").classList.remove("hidden");
+
+    /* llenar fondo de corazones */
+    for(let i=0;i<40;i++){
+        hearts.push({
+            x:Math.random()*bgCanvas.width,
+            y:bgCanvas.height+Math.random()*300,
+            size:Math.random()*20+15
+        });
+    }
+
+    setTimeout(()=>formarNombre("Yukari"),400);
+});
+
+/* ===== FORMAR NOMBRE ===== */
+function formarNombre(texto){
+
+    nameCtx.clearRect(0,0,nameCanvas.width,nameCanvas.height);
+
+    const fontSize=Math.min(nameCanvas.width/5,180);
+    nameCtx.font=`bold ${fontSize}px Arial`;
+    nameCtx.textAlign="center";
+    nameCtx.fillStyle="white";
+    nameCtx.fillText(texto,nameCanvas.width/2,nameCanvas.height/2);
+
+    const data=nameCtx.getImageData(0,0,nameCanvas.width,nameCanvas.height);
+    nameCtx.clearRect(0,0,nameCanvas.width,nameCanvas.height);
+
+    let particles=[];
+    for(let y=0;y<nameCanvas.height;y+=8){
+        for(let x=0;x<nameCanvas.width;x+=8){
+            const index=(y*nameCanvas.width+x)*4;
+            if(data.data[index+3]>150){
+                particles.push({
+                    x:Math.random()*nameCanvas.width,
+                    y:Math.random()*nameCanvas.height,
+                    tx:x,
+                    ty:y,
+                    size:Math.random()*2+1,
+                    alpha:0
+                });
+            }
+        }
+    }
+
+    let start=Date.now();
+
+    function animar(){
+        nameCtx.clearRect(0,0,nameCanvas.width,nameCanvas.height);
+
+        particles.forEach(p=>{
+            p.x+=(p.tx-p.x)*0.06;
+            p.y+=(p.ty-p.y)*0.06;
+            if(p.alpha<1)p.alpha+=0.02;
+            dibujarEstrella(p.x,p.y,p.size,p.alpha);
+        });
+
+        if(Date.now()-start<10000){
+            requestAnimationFrame(animar);
+        }else{
+            nameCtx.clearRect(0,0,nameCanvas.width,nameCanvas.height);
+        }
+    }
+    animar();
 }
 
-setInterval(crearCorazon, 300);
+/* ===== ESTRELLA AZUL ===== */
+function dibujarEstrella(x,y,size,alpha){
+    const spikes=5;
+    const outer=size*2;
+    const inner=size;
+    let rot=Math.PI/2*3;
+    let step=Math.PI/spikes;
+
+    nameCtx.beginPath();
+    nameCtx.moveTo(x,y-outer);
+    for(let i=0;i<spikes;i++){
+        nameCtx.lineTo(x+Math.cos(rot)*outer,y+Math.sin(rot)*outer);
+        rot+=step;
+        nameCtx.lineTo(x+Math.cos(rot)*inner,y+Math.sin(rot)*inner);
+        rot+=step;
+    }
+    nameCtx.closePath();
+    nameCtx.fillStyle=`rgba(120,190,255,${alpha})`;
+    nameCtx.shadowColor="#4da6ff";
+    nameCtx.shadowBlur=15;
+    nameCtx.fill();
+}
+
 </script>
 
 </body>
